@@ -1,14 +1,16 @@
-// Editable Enhanced Table with Inline Editing in MUI (Professional UI)
+// Editable Enhanced Table with Inline Editing and Search in MUI
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import {
   Box, Table, TableBody, TableCell, TableContainer, TableHead,
-  TablePagination, TableRow, Toolbar, Typography, Paper,
-  IconButton, TextField, Button, Stack
+  TablePagination, TableRow, TableSortLabel, Toolbar, Typography,
+  Paper, Checkbox, IconButton, Tooltip, FormControlLabel, Switch,
+  TextField, Button, InputAdornment
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
+import SearchIcon from '@mui/icons-material/Search';
 
 function createData(id, name, designation, role, department, phone) {
   return { id, name, designation, role, department, phone };
@@ -39,6 +41,7 @@ export default function EditableTable() {
   const [rows, setRows] = React.useState(initialRows);
   const [editRowId, setEditRowId] = React.useState(null);
   const [editData, setEditData] = React.useState({});
+  const [searchQuery, setSearchQuery] = React.useState('');
 
   const handleEditClick = (id) => {
     const row = rows.find((row) => row.id === id);
@@ -63,23 +66,46 @@ export default function EditableTable() {
     setEditData({});
   };
 
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const filteredRows = rows.filter((row) =>
+    Object.values(row).some((val) =>
+      String(val).toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
+
   return (
-    <Box sx={{ width: '100%', px: 3, py: 4, bgcolor: '#f9f9f9', minHeight: '100vh' }}>
-      <Paper elevation={3} sx={{ width: '100%', mb: 2, borderRadius: 3 }}>
-        <Toolbar sx={{ bgcolor: '#a9d2fbff', color: '#000', borderTopLeftRadius: 12, borderTopRightRadius: 12 }}>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+    <Box sx={{ width: '100%' }}>
+      <Paper sx={{ width: '100%', mb: 2 }}>
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="h6" component="div">
             USER DETAILS
           </Typography>
+          <TextField
+            variant="outlined"
+            size="small"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={handleSearchChange}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
         </Toolbar>
         <TableContainer>
           <Table>
             <TableHead>
-              <TableRow sx={{ bgcolor: '#f1f1f1' }}>
+              <TableRow>
                 {headCells.map((headCell) => (
                   <TableCell
                     key={headCell.id}
                     align={headCell.numeric ? 'right' : 'left'}
-                    sx={{ fontWeight: 'bold' }}
                   >
                     {headCell.label}
                   </TableCell>
@@ -87,8 +113,8 @@ export default function EditableTable() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
-                <TableRow key={row.id} hover>
+              {filteredRows.map((row) => (
+                <TableRow key={row.id}>
                   <TableCell align="right">{row.id}</TableCell>
                   <TableCell>
                     {editRowId === row.id ? (
@@ -96,7 +122,6 @@ export default function EditableTable() {
                         value={editData.name}
                         onChange={(e) => handleEditChange(e, 'name')}
                         size="small"
-                        fullWidth
                       />
                     ) : (
                       row.name
@@ -108,7 +133,6 @@ export default function EditableTable() {
                         value={editData.designation}
                         onChange={(e) => handleEditChange(e, 'designation')}
                         size="small"
-                        fullWidth
                       />
                     ) : (
                       row.designation
@@ -120,7 +144,6 @@ export default function EditableTable() {
                         value={editData.role}
                         onChange={(e) => handleEditChange(e, 'role')}
                         size="small"
-                        fullWidth
                       />
                     ) : (
                       row.role
@@ -131,8 +154,7 @@ export default function EditableTable() {
                       <TextField
                         value={editData.department}
                         onChange={(e) => handleEditChange(e, 'department')}
-                        size="small"  
-                        fullWidth
+                        size="small"
                       />
                     ) : (
                       row.department
@@ -144,7 +166,6 @@ export default function EditableTable() {
                         value={editData.phone}
                         onChange={(e) => handleEditChange(e, 'phone')}
                         size="small"
-                        fullWidth
                       />
                     ) : (
                       row.phone
@@ -152,12 +173,12 @@ export default function EditableTable() {
                   </TableCell>
                   <TableCell>
                     {editRowId === row.id ? (
-                      <Stack direction="row" spacing={1}>
-                        <IconButton color="primary" onClick={() => handleSaveClick(row.id)}><SaveIcon /></IconButton>
-                        <IconButton color="error" onClick={handleCancelClick}><CancelIcon /></IconButton>
-                      </Stack>
+                      <>
+                        <IconButton onClick={() => handleSaveClick(row.id)}><SaveIcon /></IconButton>
+                        <IconButton onClick={handleCancelClick}><CancelIcon /></IconButton>
+                      </>
                     ) : (
-                      <IconButton color="info" onClick={() => handleEditClick(row.id)}><EditIcon /></IconButton>
+                      <IconButton onClick={() => handleEditClick(row.id)}><EditIcon /></IconButton>
                     )}
                   </TableCell>
                 </TableRow>
