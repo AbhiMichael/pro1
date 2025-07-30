@@ -4,12 +4,13 @@ import {
   Box,
   Typography,
   Paper,
-  Grid,
   Avatar,
   Button,
   TextField,
   IconButton,
-  Stack
+  Stack,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 
 import {
@@ -38,62 +39,75 @@ import AnalyticsIcon from '@mui/icons-material/Analytics';
 
 export default function Dashboard() {
   const [currentImage, setCurrentImage] = useState('/windmill.jpg');
-  const navigate = useNavigate(); // <-- Hook for navigation
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMediumScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const items = [
-    { name: 'Windmills Loft', percent: 25, color: '#000', up: true, image: '/windmill.jpg' },
+    { name: 'Windmills Loft', percent: 25, color: '#888', up: true, image: '/windmill.jpg' },
     { name: 'Seaview Villa', percent: 18, color: '#888', up: false, image: '/seavieww.jpg' },
     { name: 'Family Villa', percent: 12, color: '#888', up: false, image: '/family.jpg' },
   ];
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
-      {/* Sidebar */}
-      <Box
-        sx={{
-          width: 80,
-          bgcolor: '#1e1e1e',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          py: 2,
-          borderTopLeftRadius: 40,
-          borderBottomLeftRadius: 40,
-        }}
-      >
-        <Button sx={{ minWidth: 0 }}><DashboardIcon sx={{ color: '#fff', fontSize: 28 }} /></Button>
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-          <Button sx={{ minWidth: 0 }}><HomeIcon sx={{ color: '#fff', fontSize: 28 }} /></Button>
-          <Button sx={{ minWidth: 0 }}><LocationOnIcon sx={{ color: '#fff', fontSize: 28 }} /></Button>
-          <Button sx={{ minWidth: 0 }}><BarChartIcon sx={{ color: '#fff', fontSize: 28 }} /></Button>
-          <Button
-            sx={{ minWidth: 0 }}
-            onClick={() => navigate('/data')} // Navigate to data.jsx
-          >
-            <PeopleIcon sx={{ color: '#fff', fontSize: 28 }} />
-          </Button>
-          <Button sx={{ minWidth: 0 }}><AnalyticsIcon sx={{ color: '#fff', fontSize: 28 }} /></Button>
+      {/* Sidebar - Hidden on small screens */}
+      {!isSmallScreen && (
+        <Box
+          sx={{
+            width: 80,
+            bgcolor: '#1e1e1e',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            py: 2,
+            borderTopLeftRadius: 40,
+            borderBottomLeftRadius: 40,
+          }}
+        >
+          <Button sx={{ minWidth: 0 }}><DashboardIcon sx={{ color: '#fff', fontSize: 28 }} /></Button>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+            <Button sx={{ minWidth: 0 }}><HomeIcon sx={{ color: '#fff', fontSize: 28 }} /></Button>
+            <Button sx={{ minWidth: 0 }}><LocationOnIcon sx={{ color: '#fff', fontSize: 28 }} /></Button>
+            <Button sx={{ minWidth: 0 }}><BarChartIcon sx={{ color: '#fff', fontSize: 28 }} /></Button>
+            <Button
+              sx={{ minWidth: 0 }}
+              onClick={() => navigate('/data')}
+            >
+              <PeopleIcon sx={{ color: '#fff', fontSize: 28 }} />
+            </Button>
+            <Button sx={{ minWidth: 0 }}><AnalyticsIcon sx={{ color: '#fff', fontSize: 28 }} /></Button>
+          </Box>
+          <Button sx={{ minWidth: 0 }}><SettingsIcon sx={{ color: '#fff', fontSize: 28 }} /></Button>
         </Box>
-        <Button sx={{ minWidth: 0 }}><SettingsIcon sx={{ color: '#fff', fontSize: 28 }} /></Button>
-      </Box>
-
-      {/* Main content continues... */}
-      {/* (No changes in main content) */}
-
+      )}
 
       {/* Main Content */}
-      <Box sx={{ flex: 1, px: 18, py: 3, overflowY: 'auto' ,}}>
+      <Box sx={{ 
+        flex: 1, 
+        px: isSmallScreen ? 2 : isMediumScreen ? 4 : 18, 
+        py: 3, 
+        overflowY: 'auto',
+        width: isSmallScreen ? '100%' : 'calc(100% - 80px)'
+      }}>
         {/* Header */}
-        <Typography variant="h5" fontWeight={600} mb={2}>
-          Monitor health of<br />your business
+        <Typography variant={isSmallScreen ? "h6" : "h5"} fontWeight={600} mb={2}>
+          Monitor health of{isSmallScreen ? ' ' : <br />}your business
         </Typography>
         <Typography variant="body2" color="text.secondary" mb={3}>
           Control and analyze your data in the easiest way
         </Typography>
 
         {/* Search & Calendar */}
-        <Box sx={{ display: 'flex', justifyContent: 'right', flexWrap: 'wrap', mb: 3 }}>
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          mb: 3,
+          gap: 2
+        }}>
           <TextField
             placeholder="Search..."
             size="small"
@@ -102,47 +116,61 @@ export default function Dashboard() {
               startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
               sx: { borderRadius: 3 }
             }}
-            sx={{ width: { xs: '100%', sm: 300 }, mb: { xs: 1, sm: 0 } }}
+            sx={{ 
+              flex: 1,
+              maxWidth: isSmallScreen ? '100%' : 300 
+            }}
           />
           <IconButton>
             <CalendarTodayIcon sx={{ color: 'black' }} />
           </IconButton>
         </Box>
 
-        {/* Grid Sections */}
+        {/* Main Content Layout */}
         <Box sx={{
-          display:'flex',
-          justifyContent:'space-between'
+          display: 'flex',
+          flexDirection:   {xs:'column',lg:'row'},
+          gap: 3
         }}>       
-           <Box sx={{
-            flexGrow:1
-           }}>
           {/* Left Side */}
-          {/* <Grid item xs={12} md={5 }> */}
-            <Stack direction="row" spacing={2}>
+          <Box sx={{
+            flex: 1,
+            minWidth: 0 // Prevent overflow
+          }}>
+            <Stack 
+              direction={isSmallScreen ? 'column' : 'row'} 
+              spacing={2}
+              sx={{ mb: 2 }}
+            >
               {[
                 { title: 'Views', count: 31, change: '+3', bg: '#e0c3fc, #8ec5fc' },
                 { title: 'Clients', count: 63, change: '+1', bg: '#a1c4fd, #c2e9fb' },
-                { title: 'Purchases', count: 10, change: '+1', bg: '#ffffff' },
+                { title: 'Purchases', count: 10, change: '+1', bg: '#d19ef0ff, #ffffffff ' },
               ].map((card, i) => (
                 <Paper key={i} sx={{
                   flex: 1,
-                  p: 8,
+                  p: isSmallScreen ? 3 : 8,
                   borderRadius: 3,
-                  background: card.bg.includes(',') ? `linear-gradient(135deg, ${card.bg})` : card.bg
+                  background: card.bg.includes(',') ? `linear-gradient(100deg, ${card.bg})` : card.bg,
+                  minWidth: isSmallScreen ? '100%' : 'auto'
                 }}>
-                  <Typography variant="h6">{card.title}</Typography>
-                  <Typography variant="h4">{card.count}</Typography>
+                  <Typography variant={isSmallScreen ? "subtitle1" : "h6"}>{card.title}</Typography>
+                  <Typography variant={isSmallScreen ? "h5" : "h4"}>{card.count}</Typography>
                   <Typography variant="caption">{card.change} last day</Typography>
                 </Paper>
               ))}
             </Stack>
 
             {/* Line Chart */}
-            <Paper sx={{ mt: 4, p: 3, borderRadius: 3 }}>
-              <Typography variant="h6" mb={1}>Total profit</Typography>
-              <Box display="flex" alignItems="center" gap={2}>
-                <Typography variant="h4" fontWeight={600}>$628.00</Typography>
+            <Paper sx={{ 
+              mt: 2, 
+              p: isSmallScreen ? 1 : 3, 
+              borderRadius: 3,
+              overflow: 'hidden'
+            }}>
+              <Typography variant={isSmallScreen ? "subtitle1" : "h6"} mb={1}>Total profit</Typography>
+              <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
+                <Typography variant={isSmallScreen ? "h5" : "h4"} fontWeight={600}>$628.00</Typography>
                 <Typography color="gray">income</Typography>
                 <Typography color="gray">expense</Typography>
               </Box>
@@ -169,78 +197,85 @@ export default function Dashboard() {
                 </ResponsiveContainer>
               </Box>
             </Paper>
-          {/* </Grid> */}
+          </Box>
 
-         
-        </Box>
-
-         {/* Right Side */}
-          <Box >
-            <Box borderRadius={4} overflow="hidden" mb={3}>
-              <img
-                src={currentImage}
-                alt="Selected"
-                style={{ width: '100%', height: 'auto', maxHeight: '350px', objectFit: 'cover' }}
-              />
-            </Box>
-
-            <Paper sx={{ p: 3, borderRadius: 4 }}>
-              <Box display="flex" justifyContent="space-between" mb={3}>
-                <Box display="flex" bgcolor="#fbfbfb" borderRadius={8} p={0.5}>
-                  <Button
-                    variant="contained"
-                    sx={{
-                      bgcolor: '#c3ebf4',
-                      color: '#333',
-                      borderRadius: 6,
-                      px: 4,
-                      textTransform: 'none',
-                      '&:hover': { bgcolor: '#333', color: '#fff' }
-                    }}
-                  >
-                    Objects
-                  </Button>
-                  <Button variant="text" sx={{ color: '#000', px: 3, textTransform: 'none' }}>
-                    Relators
-                  </Button>
-                </Box>
-                <IconButton>
-                  <MoreHorizIcon />
-                </IconButton>
+          {/* Right Side - Stack below on medium/small screens */}
+          { (
+            <Box sx={{
+              width: {xs:'100%' ,lg: 350},
+              flexShrink: 0
+            }}>
+              <Box borderRadius={4} overflow="hidden" mb={3}>
+                <img
+                  src={currentImage}
+                  alt="Selected"
+                  style={{ 
+                    width: '100%', 
+                    height: 'auto', 
+                    maxHeight: isMediumScreen ? '250px' : '350px', 
+                    objectFit: 'cover' 
+                  }}
+                />
               </Box>
 
-              <Stack spacing={2}>
-                {items.map((item, idx) => (
-                  <Box
-                    key={idx}
-                    onClick={() => setCurrentImage(item.image)}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      bgcolor: item.color === '#000' ? '#000' : 'transparent',
-                      color: item.color === '#000' ? '#fff' : '#000',
-                      p: 2,
-                      borderRadius: 2,
-                      cursor: 'pointer',
-                      transition: '0.3s',
-                      '&:hover': { backgroundColor: '#f5f5f5' }
-                    }}
-                  >
-                    <Box display="flex" alignItems="center" gap={2}>
-                      <Avatar src={item.image} />
-                      <Typography>{item.name}</Typography>
-                    </Box>9
-                    <Box display="flex" alignItems="center" gap={0.5}>
-                      <Typography>{item.percent}%</Typography>
-                      {item.up ? <ArrowDropUpIcon color="success" /> : <ArrowDropDownIcon color="error" />}
-                    </Box>
+              <Paper sx={{ p: isSmallScreen ? 1 : 3, borderRadius: 4 }}>
+                <Box display="flex" justifyContent="space-between" mb={3}>
+                  <Box display="flex" bgcolor="#fbfbfb" borderRadius={8} p={0.5}>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        bgcolor: '#c3ebf4',
+                        color: '#333',
+                        borderRadius: 6,
+                        px: 4,
+                        textTransform: 'none',
+                        '&:hover': { bgcolor: '#000', color: '#fff' }
+                      }}
+                    >
+                      Objects
+                    </Button>
+                    <Button variant="text" sx={{ color: '#000', px: 3, textTransform: 'none' }}>
+                      Relators
+                    </Button>
                   </Box>
-                ))}
-              </Stack>
-            </Paper>
-          </Box>
-      </Box>
+                  <IconButton>
+                    <MoreHorizIcon />
+                  </IconButton>
+                </Box>
+
+                <Stack spacing={2}>
+                  {items.map((item, idx) => (
+                    <Box
+                      key={idx}
+                      onClick={() => setCurrentImage(item.image)}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        bgcolor: item.color === '#000' ? '#000' : '000',
+                        color: item.color === '#575656ff' ? '#000' : '#575656ff',
+                        p: 2,
+                        borderRadius: 2,
+                        cursor: 'pointer',
+                        transition: '0.3s',
+                        '&:hover': { backgroundColor: '#000000ff' }
+                      }}
+                    >
+                      <Box display="flex" alignItems="center" gap={2}>
+                        <Avatar src={item.image} sx={{ width: 32, height: 32 }} />
+                        <Typography variant={isSmallScreen ? "body2" : "body1"}>{item.name}</Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" gap={0.5}>
+                        <Typography variant={isSmallScreen ? "body2" : "body1"}>{item.percent}%</Typography>
+                        {item.up ? <ArrowDropUpIcon color="success" /> : <ArrowDropDownIcon color="error" />}
+                      </Box>
+                    </Box>
+                  ))}
+                </Stack>
+              </Paper>
+            </Box>
+          )}
+        </Box>
       </Box>
     </Box>
   );
